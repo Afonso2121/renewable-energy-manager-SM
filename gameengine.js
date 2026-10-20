@@ -19,6 +19,8 @@ class GameEngine {
     constructor() {
         this.calculateLayout();
         this.battery = new Battery(width / 2, 130, 90, 150);
+        this.machines = [];
+        this.setupMachines();
         this.startTime = millis();
         this.elapsedTime = 0; // Em segundos
         this.isGameOver = false;
@@ -38,6 +40,17 @@ class GameEngine {
         }
     }
 
+    setupMachines() {
+        let midX = width / 2;
+        let machineY = this.bounds.bottom + 85;
+
+        this.machines = [
+            new Machine(midX - 180, machineY, 'wind', 'wind'),
+            new Machine(midX, machineY, 'solar', 'sun'),
+            new Machine(midX + 180, machineY, 'water', 'water')
+        ];
+    }
+
     update() {
         if (this.isGameOver) return;
 
@@ -46,6 +59,10 @@ class GameEngine {
 
         // Atualiza a bateria
         this.battery.update();
+
+        for (let m of this.machines) {
+            m.update();
+        }
 
         // Verifica Game Over
         if (this.battery.charge <= 0) {
@@ -64,6 +81,10 @@ class GameEngine {
 
         // 3. Desenhar a Bateria
         this.battery.draw();
+
+        for (let m of this.machines) {
+            m.draw();
+        }
 
         // 4. Desenhar o Relógio Digital
         this.drawClock();
