@@ -1,4 +1,5 @@
 class Element {
+    // O multiplicador permite aumentar a velocidade conforme a dificuldade do jogo.
     constructor(x, y, type, speedMultiplier = 1) {
         this.x = x;
         this.y = y;

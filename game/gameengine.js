@@ -144,6 +144,7 @@ class GameEngine {
             m.update();
         }
 
+        // O áudio confirma a recuperação; startRecovery inicia o cooldown da máquina.
         let hasBroken = this.machines.some(m => m.state === 'BROKEN');
         if (this.audioController.update(hasBroken)) {
             for (let m of this.machines) {
@@ -176,6 +177,7 @@ class GameEngine {
     }
 
     handleMousePressed() {
+        // Inicializa o microfone através de uma ação explícita do utilizador.
         this.audioController.init();
 
         if (this.gameState === 'START') {
@@ -488,6 +490,22 @@ class GameEngine {
         textSize(20);
         textStyle(BOLD);
         text("COMEÇAR JOGO", width / 2, btnY + btnH / 2);
+
+        // Instruções de jogo
+        let btnBottom = btnY + btnH;
+        fill(255);
+        textAlign(CENTER, TOP);
+        textStyle(NORMAL);
+        textSize(16);
+        text("Arrasta os elementos para os seus respetivos conversores de energia.", width / 2, btnBottom + 35);
+
+        fill(245, 166, 35);
+        text("Dica: evita os raios! Se as máquinas partirem, mantém um som durante 2 segundos para as consertares.", width / 2, btnBottom + 65);
+
+        fill(46, 168, 92);
+        textStyle(BOLD);
+        textSize(18);
+        text("Boa sorte!", width / 2, btnBottom + 105);
         pop();
     }
 }

@@ -7,7 +7,7 @@ class Battery {
 
         this.charge = 100; // Começa a 100%
         this.maxCharge = 100;
-        this.drainRate = 0.07; // Velocidade a que a bateria desce (ajustável)
+        this.drainRate = 0.07; // Velocidade a que a bateria desce 
     }
 
     update() {
@@ -20,6 +20,7 @@ class Battery {
 
     addCharge(amount) {
         this.charge += amount;
+        // A carga não pode ultrapassar a capacidade máxima.
         if (this.charge > this.maxCharge) {
             this.charge = this.maxCharge;
         }

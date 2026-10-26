@@ -13,6 +13,7 @@ class AudioGameController {
 
     init() {
         if (this.isInitialized) return;
+        // O browser exige uma interação do utilizador antes de ativar o áudio.
         userStartAudio();
         this.mic = new p5.AudioIn();
         this.mic.start();
@@ -50,6 +51,7 @@ class AudioGameController {
                 return true;
             }
         } else {
+            // O jogador tem de manter o volume acima do limite sem interrupções.
             this.loudStartTime = null;
             this.progress = 0;
         }
