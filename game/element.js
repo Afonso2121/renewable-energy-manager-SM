@@ -1,10 +1,10 @@
 class Element {
-    constructor(x, y, type) {
+    constructor(x, y, type, speedMultiplier = 1) {
         this.x = x;
         this.y = y;
         this.type = type; // 'sun', 'water', 'wind', 'thunder'
         this.radius = 24; // Raio para facilitar o clique do rato
-        this.speed = random(1.5, 3.0); // Velocidade de queda
+        this.speed = random(1.5, 3.0) * speedMultiplier; // Velocidade de queda
         this.isDragging = false;
     }
 

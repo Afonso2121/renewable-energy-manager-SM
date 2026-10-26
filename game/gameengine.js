@@ -41,6 +41,17 @@ class GameEngine {
         this.minPhaseTime = 15000;
         this.maxPhaseTime = 30000;
         this.nextPhaseChange = 0;
+
+        // Progressão de dificuldade (0 = início, 1 = máximo)
+        this.difficulty = 0;
+        this.difficultyRampTime = 180; // Trovões chegam ao máximo aos 180s (alinhado com o nível 12)
+        this.levelDuration = 15; // Segundos entre cada subida de nível
+        this.maxLevel = 12; // Nível máximo (atingido aos 180s)
+        this.speedStep = 0.25; // Quanto sobe a velocidade em cada nível
+        this.speedLevel = 0; // Nível atual
+        this.minThunderChance = 0.10;
+        this.maxThunderChance = 0.40;
+
         this.startTime = millis();
         this.elapsedTime = 0; // Em segundos
         this.gameState = 'START'; // Estados: 'START', 'PLAYING', 'GAMEOVER'
@@ -76,13 +87,21 @@ class GameEngine {
     }
 
     spawnElement() {
-        // Define que elementos podem cair (de noite o sol não spawna)
-        let availableTypes = ['water', 'wind', 'thunder'];
-        if (this.isDay) {
-            availableTypes.push('sun');
+        // Probabilidade de trovão aumenta com a dificuldade
+        let thunderChance = lerp(this.minThunderChance, this.maxThunderChance, this.difficulty);
+
+        let type;
+        if (random() < thunderChance) {
+            type = 'thunder';
+        } else {
+            // De noite o sol não spawna
+            let safeTypes = ['water', 'wind'];
+            if (this.isDay) safeTypes.push('sun');
+            type = random(safeTypes);
         }
 
-        let type = random(availableTypes);
+        // Os elementos caem mais depressa a cada nível
+        let speedMult = 1 + this.speedLevel * this.speedStep;
 
         // Garante que nasce apenas dentro das linhas verdes e sem bater na bateria ao centro
         let x;
@@ -93,7 +112,7 @@ class GameEngine {
         }
 
         let y = this.bounds.top + 20;
-        this.elements.push(new Element(x, y, type));
+        this.elements.push(new Element(x, y, type, speedMult));
     }
 
     update() {
@@ -105,6 +124,10 @@ class GameEngine {
 
         // Atualiza o relógio
         this.elapsedTime = (millis() - this.startTime) / 1000;
+
+        // Dificuldade sobe gradualmente com o tempo de jogo
+        this.difficulty = constrain(this.elapsedTime / this.difficultyRampTime, 0, 1);
+        this.speedLevel = min(floor(this.elapsedTime / this.levelDuration), this.maxLevel);
 
         // Ciclo Dia/Noite: troca de fase em instantes aleatórios
         if (millis() >= this.nextPhaseChange) {
