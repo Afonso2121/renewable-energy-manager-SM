@@ -35,7 +35,12 @@ class GameEngine {
         this.lastSpawnTime = 0;
         this.spawnInterval = 1200; // Spawna um elemento a cada 1.2 segundos
 
-        this.isDay = true; // Preparado para o ciclo Dia/Noite
+        // Ciclo Dia/Noite
+        this.isDay = true;
+        this.dayAmount = 1;
+        this.minPhaseTime = 15000;
+        this.maxPhaseTime = 30000;
+        this.nextPhaseChange = 0;
         this.startTime = millis();
         this.elapsedTime = 0; // Em segundos
         this.gameState = 'START'; // Estados: 'START', 'PLAYING', 'GAMEOVER'
@@ -101,6 +106,14 @@ class GameEngine {
         // Atualiza o relógio
         this.elapsedTime = (millis() - this.startTime) / 1000;
 
+        // Ciclo Dia/Noite: troca de fase em instantes aleatórios
+        if (millis() >= this.nextPhaseChange) {
+            this.isDay = !this.isDay;
+            this.nextPhaseChange = millis() + random(this.minPhaseTime, this.maxPhaseTime);
+        }
+        // Transição suave do fundo
+        this.dayAmount = lerp(this.dayAmount, this.isDay ? 1 : 0, 0.02);
+
         // Atualiza a bateria
         this.battery.update();
 
@@ -153,6 +166,9 @@ class GameEngine {
                 this.gameState = 'PLAYING';
                 this.startTime = millis();
                 this.lastSpawnTime = millis();
+                this.isDay = true;
+                this.dayAmount = 1;
+                this.nextPhaseChange = millis() + random(this.minPhaseTime, this.maxPhaseTime);
             }
             return;
         }
@@ -203,7 +219,7 @@ class GameEngine {
     }
 
     draw() {
-        background(255);
+        background(lerpColor(color(18, 22, 46), color(255), this.dayAmount));
 
         // 1. Desenhar linhas do circuito (Verdes) e limites da área de spawn
         this.drawCircuitLines();
@@ -223,6 +239,7 @@ class GameEngine {
 
         // 4. Desenhar o Relógio Digital
         this.drawClock();
+        this.drawSkyIcon();
 
         let hasBroken = this.machines.some(m => m.state === 'BROKEN');
         this.audioController.draw(hasBroken);
@@ -313,6 +330,24 @@ class GameEngine {
         rect(-16, 4, 10, 10);
         rect(16, 4, 10, 10);
 
+        pop();
+    }
+
+    drawSkyIcon() {
+        push();
+        noStroke();
+        let x = width - 175, y = 61;
+        if (this.isDay) {
+            // Durante o dia, desenha o Sol.
+            fill(245, 176, 37);
+            ellipse(x, y, 22, 22);
+        } else {
+            // À noite, sobrepõe um círculo escuro à Lua para criar a forma crescente.
+            fill(220, 225, 240);
+            ellipse(x, y, 22, 22);
+            fill(18, 22, 46);
+            ellipse(x + 7, y - 3, 18, 18);
+        }
         pop();
     }
 
