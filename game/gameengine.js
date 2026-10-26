@@ -196,7 +196,13 @@ class GameEngine {
             return;
         }
 
-        if (this.gameState === 'GAMEOVER') return;
+        if (this.gameState === 'GAMEOVER') {
+            let b = this.getRestartButton();
+            if (mouseX >= b.x && mouseX <= b.x + b.w && mouseY >= b.y && mouseY <= b.y + b.h) {
+                this.resetGame();
+            }
+            return;
+        }
 
         // Procura de trás para a frente (para agarrar o elemento que está por cima)
         for (let i = this.elements.length - 1; i >= 0; i--) {
@@ -406,6 +412,20 @@ class GameEngine {
         pop();
     }
 
+    getRestartButton() {
+        let w = 200, h = 50;
+        return { x: width / 2 - w / 2, y: height / 2 + 70, w: w, h: h };
+    }
+
+    resetGame() {
+        // Desliga o microfone antigo
+        if (this.audioController.mic) {
+            this.audioController.mic.stop();
+        }
+        // Novo motor: volta ao ecrã de calibração, tudo de raiz
+        engine = new GameEngine();
+    }
+
     drawGameOver() {
         push();
         fill(0, 0, 0, 180);
@@ -418,6 +438,18 @@ class GameEngine {
         text("SEM ENERGIA!", width / 2, height / 2 - 20);
         textSize(20);
         text(`Mantiveste as casas ligadas durante ${this.elapsedTime.toFixed(2)} segundos.`, width / 2, height / 2 + 30);
+
+        // Botão de recomeçar
+        let b = this.getRestartButton();
+        let hover = mouseX >= b.x && mouseX <= b.x + b.w && mouseY >= b.y && mouseY <= b.y + b.h;
+        fill(hover ? color(60, 190, 110) : color(46, 168, 92));
+        noStroke();
+        rect(b.x, b.y, b.w, b.h, 8);
+
+        fill(255);
+        textSize(20);
+        textStyle(BOLD);
+        text("RECOMEÇAR", width / 2, b.y + b.h / 2);
         pop();
     }
 
