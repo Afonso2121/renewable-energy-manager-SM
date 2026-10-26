@@ -12,6 +12,10 @@ class Machine {
         this.recoveryStartTime = 0;
         this.recoveryDuration = 3000; // 3 segundos para voltar após o som
         this.bladeAngle = 0; // Para animar a eólica e a turbina de água
+
+        // Som de reparação da máquina.
+        this.repairSound = new Audio('../sounds/Dont%20miss%20these%20Repair%20sound%20effect.mp3');
+        this.repairSound.loop = false;
     }
 
     update() {
@@ -19,6 +23,10 @@ class Machine {
         if (this.state === 'RECOVERING') {
             if (millis() - this.recoveryStartTime >= this.recoveryDuration) {
                 this.state = 'ACTIVE';
+
+                // Interrompe o áudio assim que termina a recuperação.
+                this.repairSound.pause();
+                this.repairSound.currentTime = 0;
             }
         }
 
@@ -61,6 +69,10 @@ class Machine {
         if (this.state === 'BROKEN') {
             this.state = 'RECOVERING';
             this.recoveryStartTime = millis();
+
+            // Reinicia o áudio e toca-o desde o início.
+            this.repairSound.currentTime = 0;
+            this.repairSound.play().catch(e => console.log("Erro ao tocar áudio:", e));
         }
     }
 
