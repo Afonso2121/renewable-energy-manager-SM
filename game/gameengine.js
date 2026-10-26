@@ -280,6 +280,9 @@ class GameEngine {
         } else if (this.gameState === 'GAMEOVER') {
             this.drawGameOver();
         }
+
+        // Desenha a identificação e o tema nos cantos inferiores
+        this.drawFooter();
     }
 
     drawCircuitLines() {
@@ -426,6 +429,30 @@ class GameEngine {
         }
         // Novo motor: volta ao ecrã de calibração, tudo de raiz
         engine = new GameEngine();
+    }
+
+    drawFooter() {
+        push();
+        // Usa contraste adequado ao fundo de cada ecrã.
+        if (this.gameState === 'START' || this.gameState === 'GAMEOVER') {
+            fill(220);
+        } else {
+            fill(80);
+        }
+
+        noStroke();
+        textFont('sans-serif');
+        textSize(14);
+        textStyle(BOLD);
+
+        // Identificação do tema no canto inferior esquerdo.
+        textAlign(LEFT, BOTTOM);
+        text("Renewable Energy Management", 20, height - 15);
+
+        // Identificação do aluno e do curso no canto inferior direito.
+        textAlign(RIGHT, BOTTOM);
+        text("Afonso Sousa | Nº34066 | ECGM", width - 20, height - 15);
+        pop();
     }
 
     drawGameOver() {
